@@ -10,7 +10,13 @@ import sys
 import pandas as pd
 
 import config
-from checks import check_column_types
+from checks import (
+    check_column_types,
+    check_all_in_positive_and_nonnull,
+    check_effective_before_end_date,
+    check_all_in_size_relationships,
+    check_ocean_base_size_relationships,
+)
 from reporter import print_report, write_log
 
 
@@ -19,6 +25,10 @@ from reporter import print_report, write_log
 # ---------------------------------------------------------------------------
 
 CHECKS = [
+    check_all_in_positive_and_nonnull,
+    check_effective_before_end_date,
+    check_all_in_size_relationships,
+    check_ocean_base_size_relationships,
     check_column_types,
 ]
 
