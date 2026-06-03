@@ -15,7 +15,6 @@ from checks import (
     check_all_in_positive_and_nonnull,
     check_effective_before_end_date,
     check_all_in_size_relationships,
-    check_ocean_base_size_relationships,
 )
 from reporter import print_report, write_log
 
@@ -28,7 +27,6 @@ CHECKS = [
     check_all_in_positive_and_nonnull,
     check_effective_before_end_date,
     check_all_in_size_relationships,
-    check_ocean_base_size_relationships,
     check_column_types,
 ]
 
@@ -71,7 +69,6 @@ def main():
         write_log(results, config.LOG_FILE_PATH)
 
     # Exit with a non-zero code if any check failed
-    # This is useful if you ever run this as part of an automated pipeline
     any_failures = any(r["status"] == "fail" for r in results)
     sys.exit(1 if any_failures else 0)
 

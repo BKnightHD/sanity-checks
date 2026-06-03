@@ -152,17 +152,15 @@ def check_column_types(df: pd.DataFrame) -> dict:
 
     for col, expected_type in COLUMN_SCHEMA.items():
 
-        # Check if the column even exists in the file
         if col not in df.columns:
             missing_columns.append(col)
             continue
 
         validator = TYPE_VALIDATORS[expected_type]
 
-        # Find rows where the value fails the type check
         bad_rows = [
             {
-                "row":      idx + 2,  # +2 because Excel rows start at 1 and row 1 is the header
+                "row":      idx + 2,
                 "column":   col,
                 "value":    df.at[idx, col],
                 "expected": expected_type,
@@ -174,7 +172,6 @@ def check_column_types(df: pd.DataFrame) -> dict:
         if bad_rows:
             details.extend(bad_rows)
 
-    # Missing columns are a warn, not a fail
     if missing_columns:
         return {
             "check":   check_name,
@@ -206,7 +203,6 @@ def check_all_in_positive_and_nonnull(df: pd.DataFrame) -> dict:
     Validates that 20' ALL IN, 40' ALL IN, and 40HC ALL IN are:
       - Not null
       - Greater than zero
-    A zero or missing all-in rate almost certainly indicates a data entry problem.
     """
     check_name  = "ALL IN Totals — Non-Null and Greater Than Zero"
     all_in_cols = ["20' ALL IN", "40' ALL IN", "40HC ALL IN"]
@@ -247,7 +243,7 @@ def check_all_in_positive_and_nonnull(df: pd.DataFrame) -> dict:
 def check_effective_before_end_date(df: pd.DataFrame) -> dict:
     """
     Validates that EFFECTIVE DATE is always earlier than or equal to END DATE.
-    Skips rows where either date is null — that's caught by the nulls check.
+    Skips rows where either date is null.
     """
     check_name = "Effective Date Before End Date"
 
@@ -294,26 +290,8 @@ def check_all_in_size_relationships(df: pd.DataFrame) -> dict:
     """
     return _check_size_relationships(
         df,
-        col_20   = "20' ALL IN",
-        col_40   = "40' ALL IN",
-        col_40hc = "40HC ALL IN",
+        col_20     = "20' ALL IN",
+        col_40     = "40' ALL IN",
+        col_40hc   = "40HC ALL IN",
         check_name = "ALL IN Size Relationships (20' < 40' <= 40HC)",
-    )
-
-
-# ---------------------------------------------------------------------------
-# Check 5: Ocean Base Charge size relationships — 20' < 40' <= 40HC
-# ---------------------------------------------------------------------------
-
-def check_ocean_base_size_relationships(df: pd.DataFrame) -> dict:
-    """
-    Validates the expected pricing relationship between container sizes
-    for Ocean Freight Base Charges: 20' < 40' <= 40HC.
-    """
-    return _check_size_relationships(
-        df,
-        col_20   = "20' Ocean Freight Base Charge",
-        col_40   = "40' Ocean Freight Base Charge",
-        col_40hc = "40HC Ocean Freight Base Charge",
-        check_name = "Ocean Base Charge Size Relationships (20' < 40' <= 40HC)",
     )
