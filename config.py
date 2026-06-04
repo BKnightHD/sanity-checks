@@ -2,6 +2,7 @@
 # Runtime settings for the sanity check runner.
 
 import os
+import re
 import glob
 from datetime import datetime
 
@@ -19,18 +20,24 @@ REPORT_FOLDER = r"\\Corpnas\UserData\Data\cp_imports_operations\Transportation r
 
 def get_latest_report(folder: str) -> str:
     """
-    Scans the report folder for files matching the pattern:
-        x.x.xxxx TRANSPORTATION REPORT.xlsx
-    Parses the date from each filename and returns the full path
-    of the file with the latest date — including future dates.
+    Scans the report folder for files matching the exact pattern:
+        M.D.YYYY TRANSPORTATION REPORT.xlsx
+    Files with anything after "REPORT" (e.g. "(BPD & CA)") are intentionally skipped.
+    Returns the full path of the file with the latest date — including future dates.
     """
-    pattern = os.path.join(folder, "*.xlsx")
+    # Exact pattern: date, space, "TRANSPORTATION REPORT", nothing else before .xlsx
+    EXACT_PATTERN = re.compile(
+        r"^\d{1,2}\.\d{1,2}\.\d{4} TRANSPORTATION REPORT\.xlsx$",
+        re.IGNORECASE
+    )
+
+    pattern  = os.path.join(folder, "*.xlsx")
     all_xlsx = glob.glob(pattern)
 
-    # Filter to only files that contain "TRANSPORTATION REPORT"
+    # Filter to only files that match the exact naming convention
     candidates = [
         f for f in all_xlsx
-        if "TRANSPORTATION REPORT" in os.path.basename(f).upper()
+        if EXACT_PATTERN.match(os.path.basename(f))
     ]
 
     if not candidates:
