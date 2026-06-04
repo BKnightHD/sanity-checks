@@ -19,13 +19,18 @@ from schema import COLUMN_SCHEMA
 
 def _is_numeric(value) -> bool:
     if pd.isna(value):
-        return True  # nulls are not a type violation — that's a separate check
+        return True
+    if isinstance(value, bool):  # bool is a subclass of int in Python — exclude it
+        return False
     return isinstance(value, (int, float))
 
 
 def _is_string(value) -> bool:
     if pd.isna(value):
         return True
+    # Explicitly reject numbers masquerading in string columns
+    if isinstance(value, (int, float, bool)):
+        return False
     return isinstance(value, str)
 
 
