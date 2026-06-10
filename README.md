@@ -180,3 +180,6 @@ Valid types: `"date"`, `"string"`, `"numeric"`, `"boolean"`
 |---|---|
 | `pandas` | Reads the Excel file and powers all data checks |
 | `openpyxl` | Engine pandas uses to open `.xlsx` files |
+
+
+## pending new updates..
