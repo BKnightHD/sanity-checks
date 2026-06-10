@@ -10,19 +10,19 @@
 # }
 
 import pandas as pd
-from schema import COLUMN_SCHEMA
-
+from schema import COLUMN_SCHEMA # calling in the schema.py file to get the expected column types for check_column_types()
 
 # ---------------------------------------------------------------------------
 # Helper: map our simple type names to a validation function
 # ---------------------------------------------------------------------------
 
-def _is_numeric(value) -> bool:
-    if pd.isna(value):
-        return True
-    if isinstance(value, bool):  # bool is a subclass of int in Python — exclude it
+def _is_numeric(value) -> bool:             # leading underscore of function says "this function only lives in this file..not to be imported outside".
+                                            # -> bool - this is type hinting, it telle the reader "This function returns a boolean value (True or False)"
+    if pd.isna(value):                      # pd.isna() is a pandas function that checks if a vlaue is null/empty/missing.
+        return True                         # if the value(cell) is empty, we return True because we want to allow empty cells in numeric columns. We will catch null values in a separate check function.
+    if isinstance(value, bool):             # "Is this value a boolean (True/False)?" If so, we return False because we don't want to allow True/False values in numeric columns.
         return False
-    return isinstance(value, (int, float))
+    return isinstance(value, (int, float))  # Finally, we check if the value is an integer or a float. If it is, we return True. If it's anything else (like a string), we return False.
 
 
 def _is_string(value) -> bool:
@@ -39,7 +39,7 @@ def _is_date(value) -> bool:
         return True
     return isinstance(value, (pd.Timestamp,))
 
-
+# Helper function to check boolean value. It's currently not being used; only here for completeness.
 def _is_boolean(value) -> bool:
     if pd.isna(value):
         return True
@@ -52,7 +52,6 @@ TYPE_VALIDATORS = {
     "date":    _is_date,
     "boolean": _is_boolean,
 }
-
 
 # ---------------------------------------------------------------------------
 # Helper: build a standard result dict
@@ -72,7 +71,6 @@ def _make_result(check_name: str, details: list, pass_message: str, fail_message
         "message": pass_message,
         "details": [],
     }
-
 
 # ---------------------------------------------------------------------------
 # Helper: reusable size relationship checker (20' < 40' <= 40HC)
